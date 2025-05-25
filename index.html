@@ -13,9 +13,9 @@
         :root {
             --bg-color: #0a0a0a;
             --text-color: #ffaa80;
-            --accent-color: #ff6b35;
+            --accent-color: #ff6b35; /* This is the general accent orange */
             --collapsible-bg-color: #1a1a1a;
-            --star-color: #ff6b35;
+            --star-color: #ff6b35; /* The color for stars and now the SVG seal */
         }
 
         /* Base body styles */
@@ -25,8 +25,29 @@
             color: var(--text-color);
             margin: 0;
             padding: 20px;
-            /* Removed overflow-x: hidden to allow horizontal scrolling if content overflows,
-               making it visible rather than cut off. */
+        }
+
+        /* Overlay for the background SVG seal to control its opacity and positioning */
+        #background-seal-svg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex; /* Use flexbox to center the SVG within this div */
+            justify-content: center;
+            align-items: center;
+            opacity: 0.6; /* Set base opacity to match stars */
+            z-index: -2; /* Ensure it's behind stars and content */
+            pointer-events: none; /* Make it non-interactive */
+            animation: twinkle 3s infinite alternate; /* Apply the same twinkle animation as stars */
+        }
+
+        #background-seal-svg svg {
+            width: 40%; /* Adjust size of the SVG within its container */
+            height: auto;
+            max-width: 500px; /* Optional: limit max size for very large screens */
+            max-height: 500px;
         }
 
         /* Stars background animation */
@@ -166,6 +187,28 @@
     </style>
 </head>
 <body>
+    <div id="background-seal-svg">
+        <svg viewBox="0 -2 100 104" preserveAspectRatio="xMidYMid meet">
+            <defs>
+                </defs>
+
+            <polygon points="50 0, 93.3 25, 93.3 75, 50 100, 6.7 75, 6.7 25" fill="none" stroke="var(--star-color)" stroke-width="2"/>
+
+            <path d="M45 15 C40 30, 60 70, 55 85" fill="none" stroke="var(--star-color)" stroke-width="3"/>
+            <path d="M55 15 C60 30, 40 70, 45 85" fill="none" stroke="var(--star-color)" stroke-width="3"/>
+
+            <line x1="45" y1="25" x2="55" y2="25" stroke="var(--star-color)" stroke-width="2"/>
+            <line x1="45" y1="35" x2="55" y2="35" stroke="var(--star-color)" stroke-width="2"/>
+            <line x1="46.5" y1="45" x2="53.5" y2="45" stroke="var(--star-color)" stroke-width="2"/>
+            <line x1="46.5" y1="55" x2="53.5" y2="55" stroke="var(--star-color)" stroke-width="2"/>
+            <line x1="45" y1="65" x2="55" y2="65" stroke="var(--star-color)" stroke-width="2"/>
+            <line x1="45" y1="75" x2="55" y2="75" stroke="var(--star-color)" stroke-width="2"/>
+
+            <rect x="48.5" y="5" width="3" height="10" fill="var(--star-color)"/>
+            <path d="M48.5 5 L40 0 L40 8 L48.5 8 Z" fill="var(--star-color)"/>
+            <path d="M51.5 5 L60 0 L60 8 L51.5 8 Z" fill="var(--star-color)"/>
+        </svg>
+    </div>
     <div id="stars"></div>
 
     <div class="unit supreme-leader-unit">
