@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCAF Org Chart (Refactored & Interactive)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Import Google Font - Orbitron */
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+
+        /* Custom CSS variables for theme */
+        :root {
+            --bg-color: #0a0a0a;
+            --text-color: #ffaa80;
+            --accent-color: #ff6b35; /* This is the general accent orange */
+            --collapsible-bg-color: #1a1a1a;
+            --star-color: #ff6b35; /* The color for stars and now the SVG seal */
+            /* --neon-orange variable is no longer needed for the SVG */
+        }
+
+        /* Base body styles */
+        body {
+            background: var(--bg-color);
+            font-family: monospace; /* Reverted to monospace font for general text */
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Overlay for the background SVG seal to control its opacity and positioning */
+        #background-seal-svg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex; /* Use flexbox to center the SVG within this div */
+            justify-content: center;
+            align-items: center;
+            opacity: 0.6; /* Set base opacity to match stars */
+            z-index: -2; /* Ensure it's behind stars and content */
+            pointer-events: none; /* Make it non-interactive */
+            animation: twinkle 3s infinite alternate; /* Apply the same twinkle animation as stars */
+        }
+
+        #background-seal-svg svg {
+            width: 40%; /* Adjust size of the SVG within its container */
+            height: auto;
+            max-width: 500px; /* Optional: limit max size for very large screens */
+            max-height: 500px;
+            /* No filter applied here, as the glow is handled by the animation and base color */
+        }
+
+        /* Stars background animation */
+        #stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1; /* Ensure it's behind all content */
+        }
+
+        .star {
+            position: absolute;
+            background: var(--star-color);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: twinkle 3s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.8; }
+        }
+
+        /* Base styles for units and collapsible triggers */
+        .unit {
+            box-sizing: border-box;
+            padding: 10px;
+            border: 1px solid var(--accent-color);
+            margin: 10px 0;
+            border-radius: 8px; /* Rounded corners */
+            background: var(--collapsible-bg-color);
+            color: var(--text-color);
+            font-family: inherit;
+            font-size: inherit;
+            text-align: left;
+            width: 100%; /* Make them take full available width */
+            transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Added subtle box shadow */
+            display: flex; /* Use flexbox for alignment of text and arrow */
+            justify-content: space-between; /* Space out content and arrow */
+            align-items: center; /* Vertically align items */
+        }
+
+        button.collapsible {
+            cursor: pointer;
+            outline: none; /* Remove outline on focus */
+        }
+
+        button.collapsible:hover {
+            background: rgba(var(--accent-color), 0.1); /* Subtle hover effect */
+            border-color: var(--text-color);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+        }
+
+        /* Arrow styling */
+        .collapsible-arrow {
+            display: inline-block;
+            margin-left: 10px;
+            transition: transform 0.3s ease; /* Smooth rotation transition */
+            font-size: 1.2em; /* Make arrow slightly larger */
+        }
+
+        .collapsible-arrow.expanded {
+            transform: rotate(90deg); /* Rotate arrow when expanded */
+        }
+
+        /* Collapsible section styles */
+        .collapsible-section {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
+            margin-left: 20px;
+            border-left: 1px dashed var(--accent-color);
+            padding-left: 10px;
+        }
+
+        .collapsible-section.expanded {
+            max-height: 2000px; /* Sufficiently large to show content */
+            opacity: 1;
+        }
+
+        /* Branch container for horizontal layout */
+        .branch-container {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            margin-left: 20px;
+        }
+
+        .branch {
+            flex: 1 1 300px; /* flex-grow, flex-shrink, flex-basis: allows items to grow/shrink but prefers 300px */
+            max-width: 100%; /* Ensure branches don't overflow their container */
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            .branch-container {
+                flex-direction: column; /* Stack branches vertically on small screens */
+                gap: 20px;
+            }
+            .branch {
+                width: 100%; /* Ensure each branch takes full width when stacked */
+                flex-basis: auto; /* Allow flex-basis to adjust automatically */
+            }
+            .collapsible-section {
+                margin-left: 10px; /* Reduce margin on small screens */
+                padding-left: 5px;
+            }
+        }
+
+        /* Unique style for the top-level parent */
+        .supreme-leader-unit {
+            background-color: #000; /* Black background */
+            color: #fff; /* White text */
+            border: 2px solid var(--accent-color); /* Orange border using accent-color */
+            font-family: 'Orbitron', sans-serif; /* New font for this unit */
+            font-size: 1.4em; /* Increased font size */
+            font-weight: bold; /* Bold text */
+            text-align: center; /* Center text */
+            padding: 15px;
+            margin-bottom: 20px; /* More space below */
+            border-radius: 10px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5); /* Stronger shadow */
+            text-transform: uppercase; /* All caps */
+            /* Orange bloom effect using text-shadow */
+            text-shadow: 0 0 5px var(--accent-color),
+                         0 0 10px var(--accent-color),
+                         0 0 20px var(--accent-color),
+                         0 0 40px rgba(255, 107, 53, 0.7); /* Stronger glow */
+            /* Removed display: flex and justify-content: space-between to allow text-align: center to work */
+            display: block; /* Ensure it behaves like a block element for text-align */
+        }
+    </style>
+</head>
+<body>
+    <div id="background-seal-svg">
+        <svg viewBox="0 -2 100 104" preserveAspectRatio="xMidYMid meet">
+            <defs>
+                </defs>
+
+            <polygon points="50 0, 93.3 25, 93.3 75, 50 100, 6.7 75, 6.7 25" fill="none" stroke="var(--star-color)" stroke-width="2"/>
+
+            <path d="M45 15 C40 30, 60 70, 55 85" fill="none" stroke="var(--star-color)" stroke-width="3"/>
+            <path d="M55 15 C60 30, 40 70, 45 85" fill="none" stroke="var(--star-color)" stroke-width="3"/>
+
+            <line x1="45" y1="25" x2="55" y2="25" stroke="var(--star-color)" stroke-width="2"/>
+            <line x1="45" y1="35" x2="55" y2="35" stroke="var(--star-color)" stroke-width="2"/>
+            <line x1="46.5" y1="45" x2="53.5" y2="45" stroke="var(--star-color)" stroke-width="2"/>
+            <line x1="46.5" y1="55" x2="53.5" y2="55" stroke="var(--star-color)" stroke-width="2"/>
+            <line x1="45" y1="65" x2="55" y2="65" stroke="var(--star-color)" stroke-width="2"/>
+            <line x1="45" y1="75" x2="55" y2="75" stroke="var(--star-color)" stroke-width="2"/>
+
+            <rect x="48.5" y="5" width="3" height="10" fill="var(--star-color)"/>
+            <path d="M48.5 5 L40 0 L40 8 L48.5 8 Z" fill="var(--star-color)"/>
+            <path d="M51.5 5 L60 0 L60 8 L51.5 8 Z" fill="var(--star-color)"/>
+        </svg>
+    </div>
+    <div id="stars"></div>
+
+    <div class="unit supreme-leader-unit">
+        United Labour Colonies of Democratic New Carolus
+    </div>
+
+    <button class="unit collapsible" data-target="highcom" aria-expanded="false" aria-controls="highcom">
+        <span>High Commissioner</span>
+        <span class="collapsible-arrow">&#9658;</span> </button>
+    <div class="collapsible-section" id="highcom">
+        <button class="unit collapsible" data-target="board" aria-expanded="false" aria-controls="board">
+            <span>Board of Commissioners</span>
+            <span class="collapsible-arrow">&#9658;</span>
+        </button>
+        <div class="collapsible-section" id="board">
+            <div class="branch-container">
+                <div class="branch">
+                    <button class="collapsible" data-target="ncaf" aria-expanded="false" aria-controls="ncaf">
+                        <span>New Carolean Armed Forces (NCAF)</span>
+                        <span class="collapsible-arrow">&#9658;</span>
+                    </button>
+                    <div class="collapsible-section" id="ncaf">
+                        <div class="branch-container"> <div class="branch">
+                                <button class="unit collapsible" data-target="ncnc" aria-expanded="false" aria-controls="ncnc">
+                                    <span>New Carolean Naval Command (NCNC)</span>
+                                    <span class="collapsible-arrow">&#9658;</span>
+                                </button>
+                                <div class="collapsible-section" id="ncnc">
+                                    <button class="unit collapsible" data-target="firstVoidlord" aria-expanded="false" aria-controls="firstVoidlord">
+                                        <span>First Voidlord (Overall NCNC Commander)</span>
+                                        <span class="collapsible-arrow">&#9658;</span>
+                                    </button>
+                                    <div class="collapsible-section" id="firstVoidlord">
+                                        <button class="unit collapsible" data-target="highAdmiralty" aria-expanded="false" aria-controls="highAdmiralty">
+                                            <span>High Admiralty (Grand Admiral)</span>
+                                            <span class="collapsible-arrow">&#9658;</span>
+                                        </button>
+                                        <div class="collapsible-section" id="highAdmiralty">
+                                            <div class="branch-container"> <div class="branch">
+                                                    <div class="unit">Orbital Defence Force (Homeworld Security)</div>
+                                                </div>
+                                                <div class="branch">
+                                                    <button class="unit collapsible" data-target="ncef" aria-expanded="false" aria-controls="ncef">
+                                                        <span>New Carolean Starfleet</span>
+                                                        <span class="collapsible-arrow">&#9658;</span>
+                                                    </button>
+                                                    <div class="collapsible-section" id="ncef">
+                                                        <div class="unit">Fleet Operations Command</div>
+                                                        <div class="unit">Naval Intelligence Bureau</div>
+                                                        <div class="unit">Naval Research Division</div>
+                                                        <div class="unit">Astral Doctrine Bureau</div>
+                                                    </div>
+                                                </div>
+                                                <div class="branch">
+                                                    <div class="unit">Astrocartography and Navigation Bureau (ANB)</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="branch">
+                                <button class="unit collapsible" data-target="dlc" aria-expanded="false" aria-controls="dlc">
+                                    <span>Department of Labor Corrections</span>
+                                    <span class="collapsible-arrow">&#9658;</span>
+                                </button>
+                                <div class="collapsible-section" id="dlc">
+                                    <div class="unit">Genetic Modification Committee</div>
+                                    <button class="unit collapsible" data-target="dis" aria-expanded="false" aria-controls="dis">
+                                        <span>Directorate of Internal Security</span>
+                                        <span class="collapsible-arrow">&#9658;</span>
+                                    </button>
+                                    <div class="collapsible-section" id="dis">
+                                        <div class="unit">Compliance Units</div>
+                                        <div class="unit">Productivity Oversight Committee</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="branch">
+                    <button class="collapsible" data-target="ministries" aria-expanded="false" aria-controls="ministries">
+                        <span>Civilian Ministries</span>
+                        <span class="collapsible-arrow">&#9658;</span>
+                    </button>
+                    <div class="collapsible-section" id="ministries">
+                        <button class="unit collapsible" data-target="economicAffairs" aria-expanded="false" aria-controls="economicAffairs">
+                            <span>Department of Economic Affairs</span>
+                            <span class="collapsible-arrow">&#9658;</span>
+                        </button>
+                        <div class="collapsible-section" id="economicAffairs">
+                            <div class="unit">Ministry of Trade</div>
+                            <div class="unit">The Treasury</div> <div class="unit">Mining Guild Association</div> </div>
+                        <button class="unit collapsible" data-target="externalAffairs" aria-expanded="false" aria-controls="externalAffairs">
+                            <span>Department of External Affairs</span>
+                            <span class="collapsible-arrow">&#9658;</span>
+                        </button>
+                        <div class="collapsible-section" id="externalAffairs">
+                            <div class="unit">Foreign Intelligence Service</div> <div class="unit">Foreign Office</div>
+                        </div>
+                        <button class="unit collapsible" data-target="internalAffairs" aria-expanded="false" aria-controls="internalAffairs">
+                            <span>Department of Internal Affairs</span>
+                            <span class="collapsible-arrow">&#9658;</span>
+                        </button>
+                        <div class="collapsible-section" id="internalAffairs">
+                            <div class="unit">Ministry of Justice</div>
+                            <div class="unit">Ministry of Education</div>
+                            <div class="unit">Ministry of Health</div>
+                            <div class="unit">Ministry of Transport</div>
+                            <div class="unit">Ministry of Progress</div> </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Ensure DOM is fully loaded before running scripts
+        document.addEventListener("DOMContentLoaded", () => {
+            // Star generation logic for background animation
+            const starsContainer = document.getElementById("stars");
+            if (starsContainer) {
+                // Generate 150 stars with random sizes and positions
+                for (let i = 0; i < 150; i++) {
+                    const star = document.createElement("div");
+                    star.classList.add("star");
+                    // Random size between 1px and 3px
+                    star.style.width = `${Math.random() * 2 + 1}px`;
+                    star.style.height = star.style.width; // Keep it circular
+                    // Random position within the viewport
+                    star.style.top = `${Math.random() * 100}%`;
+                    star.style.left = `${Math.random() * 100}%`;
+                    starsContainer.appendChild(star);
+                }
+            }
+
+            // Collapsible functionality for organizational chart sections
+            document.querySelectorAll('button.collapsible').forEach(button => {
+                button.addEventListener('click', () => {
+                    // Get the ID of the target collapsible section from data-target attribute
+                    const targetId = button.getAttribute('data-target');
+                    
+                    // Log a warning if data-target is missing
+                    if (!targetId) {
+                        console.warn("Collapsible button is missing 'data-target' attribute:", button);
+                        return;
+                    }
+                    
+                    // Get the target element by its ID
+                    const targetElement = document.getElementById(targetId);
+
+                    // Log a warning if the target element is not found
+                    if (!targetElement) {
+                        console.warn("Target element not found for ID:", targetId, "from button:", button);
+                        return;
+                    }
+
+                    // Check the current expanded state using aria-expanded attribute
+                    const isCurrentlyExpanded = button.getAttribute('aria-expanded') === 'true';
+                    
+                    // Toggle the aria-expanded attribute for accessibility
+                    button.setAttribute('aria-expanded', !isCurrentlyExpanded);
+                    // Toggle the 'expanded' class to apply CSS transitions for expansion/collapse
+                    targetElement.classList.toggle('expanded');
+
+                    // Find the arrow within the clicked button and toggle its 'expanded' class
+                    const arrow = button.querySelector('.collapsible-arrow');
+                    if (arrow) {
+                        arrow.classList.toggle('expanded', !isCurrentlyExpanded);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+```
+I've updated the `ncaf-org-chart` immersive to address the issue with the SVG seal's bottom vertex being cut off.
+
+Here's the specific change:
+* **Adjusted SVG `viewBox`:** I've modified the `viewBox` attribute of the SVG from `0 0 100 100` to `0 -2 100 104`. This slightly expands the vertical viewing area of the SVG, providing a small buffer at the top and bottom. This ensures that the entire hexagon, including its stroke, is fully visible without being clipped at the edges.
+
+You should now see the complete hexagon shape of the SVG seal in the backgrou
