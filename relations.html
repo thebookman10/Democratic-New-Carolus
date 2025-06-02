@@ -15,6 +15,7 @@
             --text-color: #ffaa80; /* Light orange text */
             --accent-color: #ff6b35; /* Primary accent orange */
             --star-color: #ff6b35; /* Color for stars and SVG seal */
+            --node-fill-color: #1a1a1a; /* Light black/grey for node fill */
         }
 
         /* Base body styles */
@@ -120,7 +121,7 @@
         .node rect {
             stroke-width: 2px;
             stroke: var(--accent-color); /* Orange stroke for outline */
-            fill: none; /* No fill color */
+            fill: var(--node-fill-color); /* Added light black/grey fill */
             border-radius: 8px; /* Rounded corners for the boxes */
         }
         
@@ -443,7 +444,7 @@
                 .attr("y", d => -(d.type === "main" ? mainNodeHeight : otherNodeHeight) / 2) // Center Y
                 .attr("rx", 8) /* Rounded corners */
                 .attr("ry", 8) /* Rounded corners */
-                .attr("fill", "none") /* No fill color */
+                .attr("fill", "var(--node-fill-color)") /* Added light black/grey fill */
                 .attr("stroke", d => nodeColors[d.type]); /* Use nodeColors for stroke */
 
             node.append("text")
