@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Carolus Diplomatic Relations</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <style>
+        /* Import Google Font - Orbitron */
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+
+        /* Custom CSS variables for theme */
+        :root {
+            --bg-color: #0a0a0a; /* Dark background */
+            --text-color: #ffaa80; /* Light orange text */
+            --accent-color: #ff6b35; /* Primary accent orange */
+            --star-color: #ff6b35; /* Color for stars and SVG seal */
+        }
+
+        /* Base body styles */
+        body {
+            font-family: monospace; /* Monospace font for a sci-fi feel */
+            background: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            min-width: 100vw; /* Ensure body takes full viewport width */
+            min-height: 100vh; /* Ensure body takes full viewport height */
+            display: flex; /* Use flexbox for centering content */
+            flex-direction: column; /* Stack children vertically */
+            align-items: center; /* Center children horizontally */
+            justify-content: flex-start; /* Align children to the start vertically, allowing scroll */
+        }
+        
+        /* Background SVG Seal Overlay */
+        #background-seal-svg {
+            position: fixed; /* Fixed position so it doesn't scroll with content */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex; /* Use flexbox to center the SVG within this div */
+            justify-content: center;
+            align-items: center;
+            opacity: 0.08; /* Reduced opacity for a subtle background */
+            z-index: -2; /* Ensure it's behind stars and content */
+            pointer-events: none; /* Make it non-interactive */
+            animation: twinkle 3s infinite alternate; /* Apply twinkle animation */
+        }
+
+        #background-seal-svg svg {
+            width: 40%; /* Adjust size of the SVG within its container */
+            height: auto;
+            max-width: 500px; /* Optional: limit max size for very large screens */
+            max-height: 500px;
+        }
+
+        /* Stars background animation */
+        #stars {
+            position: fixed; /* Fixed position so it doesn't scroll with content */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1; /* Ensure it's behind all content but above the SVG seal */
+        }
+
+        .star {
+            position: absolute;
+            background: var(--star-color);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: twinkle 3s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.8; }
+        }
+
+        .container {
+            max-width: 1200px;
+            position: relative; /* For z-index to work relative to background */
+            z-index: 1; /* Ensure content is above background */
+            flex-shrink: 0; /* Prevent container from shrinking below its content size */
+        }
+        
+        /* Updated H1 styling to match the provided Org Chart title */
+        h1 {
+            text-align: center;
+            color: #fff; /* White text for contrast with orange glow */
+            margin-bottom: 30px;
+            font-family: 'Orbitron', sans-serif; /* New font for this unit */
+            font-size: 1.8em; /* Increased font size for prominence */
+            font-weight: bold; /* Bold text */
+            text-transform: uppercase; /* All caps */
+            /* Orange bloom effect using text-shadow */
+            text-shadow: 0 0 5px var(--accent-color),
+                         0 0 10px var(--accent-color),
+                         0 0 20px var(--accent-color),
+                         0 0 40px rgba(255, 107, 53, 0.7); /* Stronger glow */
+        }
+        
+        .graph-container {
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            min-width: fit-content; 
+            min-height: fit-content;
+        }
+        
+        .node {
+            cursor: grab; /* Indicate draggable */
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
+        
+        /* Styling for the new rectangular nodes */
+        .node rect {
+            stroke-width: 2px;
+            stroke: var(--accent-color); /* Orange stroke for outline */
+            fill: none; /* No fill color */
+            border-radius: 8px; /* Rounded corners for the boxes */
+        }
+        
+        .node text {
+            /* Updated styling for node text */
+            font-family: 'Orbitron', sans-serif; /* Apply Orbitron font */
+            font-size: 10px; /* Adjusted font size for readability within nodes */
+            font-weight: bold;
+            text-anchor: middle;
+            dominant-baseline: middle;
+            fill: var(--text-color); /* Use light orange text color */
+            /* Added black outline for text */
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000,
+                         0 0 2px rgba(255, 107, 53, 0.5), /* Subtle glow for node text */
+                         0 0 5px rgba(255, 107, 53, 0.3);
+            text-transform: uppercase; /* All caps for node text */
+        }
+        
+        .link {
+            stroke-width: 3px;
+            opacity: 0.8;
+        }
+        
+        /* Updated Legend Positioning */
+        .legend {
+            position: fixed; /* Changed to fixed so it stays in view */
+            bottom: 30px;
+            left: 30px;
+            background: rgba(0,0,0,0.9); /* Dark background for legend */
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--accent-color); /* Accent orange border */
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 3px;
+            margin-right: 10px;
+            /* For the legend, since nodes are now outlines, the color swatch should show the outline color */
+            border: 1px solid; /* Add border to mimic outline */
+            background: none; /* No background for legend color swatch */
+        }
+
+        /* Specific legend color for 'Imperial Tribute' to show red border */
+        .legend-item:nth-child(3) .legend-color {
+            border-color: #ff4444; /* Red border for Imperial Tribute */
+        }
+        /* Specific legend color for 'Proposed Relations' to show lighter orange border */
+        .legend-item:nth-child(2) .legend-color {
+            border-color: #ffaa00; /* Lighter orange border for Proposed Relations */
+        }
+        /* For 'Agreed Relations' and 'Trade Offer', use accent-color */
+        .legend-item:nth-child(1) .legend-color,
+        .legend-item:nth-child(4) .legend-color {
+            border-color: var(--accent-color);
+        }
+        
+        .tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.9); /* Dark background for tooltip */
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            pointer-events: none; /* Default to none for hover tooltips */
+            border: 1px solid var(--accent-color); /* Accent orange border */
+            opacity: 0;
+            max-width: 300px;
+            min-width: 200px;
+            line-height: 1.4;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+            z-index: 1001; /* Ensure tooltip is above other elements */
+        }
+    </style>
+</head>
+<body>
+    <div id="background-seal-svg">
+        <svg viewBox="0 -2 100 104" preserveAspectRatio="xMidYMid meet">
+            <polygon points="50 0, 93.3 25, 93.3 75, 50 100, 6.7 75, 6.7 25" fill="none" stroke="var(--star-color)" stroke-width="2"/>
+            <path d="M45 15 C40 30, 60 70, 55 85" fill="none" stroke="var(--star-color)" stroke-width="3"/>
+            <path d="M55 15 C60 30, 40 70, 45 85" fill="none" stroke="var(--star-color)" stroke-width="3"/>
+            <line x1="45" y1="25" x2="55" y2="25" stroke="var(--star-color)" stroke-width="2"/>
+            <line x1="45" y1="35" x2="55" y2="35" stroke="var(--star-color)" stroke-width="2"/>
+            <line x1="46.5" y1="45" x2="53.5" y2="45" stroke="var(--star-color)" stroke-width="2"/>
+            <line x1="46.5" y1="55" x2="53.5" y2="55" stroke="var(--star-color)" stroke-width="2"/>
+            <line x1="45" y1="65" x2="55" y2="65" stroke="var(--star-color)" stroke-width="2"/>
+            <line x1="45" y1="75" x2="55" y2="75" stroke="var(--star-color)" stroke-width="2"/>
+            <rect x="48.5" y="5" width="3" height="10" fill="var(--star-color)"/>
+            <path d="M48.5 5 L40 0 L40 8 L48.5 8 Z" fill="var(--star-color)"/>
+            <path d="M51.5 5 L60 0 L60 8 L51.5 8 Z" fill="var(--star-color)"/>
+        </svg>
+    </div>
+    <div id="stars"></div>
+
+    <div class="container">
+        <h1>New Carolus Diplomatic Relations - Sector U</h1>
+        
+    </div>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color" style="background: #00bcd4;"></div> <span>Agreed Relations</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ffaa00;"></div> <span>Proposed Relations</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #cc0000;"></div> <span>Imperial Tribute</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: var(--accent-color);"></div> <span>Trade Offer</span>
+        </div>
+    </div>
+
+    <div class="graph-container">
+        <svg id="graph"></svg>
+    </div>
+        
+    <script>
+        // Ensure DOM is fully loaded before running scripts
+        document.addEventListener("DOMContentLoaded", () => {
+            // Star generation logic for background animation
+            const starsContainer = document.getElementById("stars");
+            if (starsContainer) {
+                // Generate 150 stars with random sizes and positions
+                for (let i = 0; i < 150; i++) {
+                    const star = document.createElement("div");
+                    star.classList.add("star");
+                    // Random size between 1px and 3px
+                    star.style.width = `${Math.random() * 2 + 1}px`;
+                    star.style.height = star.style.width; // Keep it circular
+                    // Random position within the viewport
+                    star.style.top = `${Math.random() * 100}%`;
+                    star.style.left = `${Math.random() * 100}%`;
+                    starsContainer.appendChild(star);
+                }
+            }
+
+            // Increased width and height to allow more space for dragging and scrolling
+            const width = 2000; 
+            const height = 1200;
+            
+            const svg = d3.select("#graph")
+                .attr("width", width)
+                .attr("height", height);
+                
+            // Tooltip is now created dynamically, no need for a static #tooltip div
+
+            // Define the relationships data
+            const nodes = [
+                { id: "New Carolus", type: "main", x: width/2, y: height/2 },
+                { id: "Terran Empire", type: "empire", x: width/2 + 200, y: height/2 - 150 },
+                { id: "Keystone Republic", type: "republic", x: width/2 - 200, y: height/2 - 100 },
+                { id: "Dominion Republic", type: "republic", x: width/2 - 150, y: height/2 + 150 },
+                { id: "Lansede 4", type: "colony", x: width/2 + 150, y: height/2 + 100 },
+                { id: "Albion Ora", type: "colony", x: width/2 - 250, y: height/2 },
+                { id: "Manzana", type: "colony", x: width/2 + 100, y: height/2 - 200 },
+                { id: "Federation", type: "federation", x: width/2 - 100, y: height/2 - 200 }
+            ];
+
+            const links = [
+                { 
+                    source: "New Carolus", 
+                    target: "Terran Empire", 
+                    type: "tribute", 
+                    status: "agreed",
+                    description: "Protection in exchange for 5 funds tribute"
+                },
+                { 
+                    source: "New Carolus", 
+                    target: "Keystone Republic", 
+                    type: "pact", 
+                    status: "agreed",
+                    description: "Non-aggression pact agreed"
+                },
+                { 
+                    source: "New Carolus", 
+                    target: "Dominion Republic", 
+                    type: "diplomatic", 
+                    status: "agreed",
+                    description: "Ambassador exchange agreed"
+                },
+                { 
+                    source: "New Carolus", 
+                    target: "Lansede 4", 
+                    type: "trade", 
+                    status: "agreed",
+                    description: "Bilateral trade and diplomatic relations accepted"
+                },
+                { 
+                    source: "New Carolus", 
+                    target: "Albion Ora", 
+                    type: "trade", 
+                    status: "agreed",
+                    description: "Trade relations welcomed"
+                },
+                { 
+                    source: "New Carolus", 
+                    target: "Manzana", 
+                    type: "trade", 
+                    status: "proposed",
+                    description: "Trade relations proposed by New Carolus"
+                },
+                { 
+                    source: "New Carolus", 
+                    target: "Federation", 
+                    type: "trade", 
+                    status: "proposed",
+                    description: "Federation proposed mineral purchase agreement"
+                }
+            ];
+
+            // Color schemes - used for links and legend, and node stroke
+            const nodeColors = {
+                main: "var(--accent-color)",      /* Primary accent orange */
+                empire: "#6b0000",                /* Deep, dark red */
+                republic: "#2a4a5a",              /* Muted steel-blue/grey */
+                colony: "#a0522d",                /* Darker, earthy orange-brown */
+                federation: "#1a2b3c"             /* Very dark, deep blue */
+            };
+
+            const linkColors = {
+                agreed: "#00bcd4",                /* Vibrant Cyan */
+                proposed: "#ffaa00",              /* Lighter orange */
+                tribute: "#cc0000",               /* Strong Red */
+                trade: "var(--accent-color)"      /* Primary accent orange */
+            };
+
+            // Define node dimensions
+            const mainNodeWidth = 180;
+            const mainNodeHeight = 60;
+            const otherNodeWidth = 150;
+            const otherNodeHeight = 50;
+
+            // Helper function to calculate intersection point of a line with a rectangle's perimeter
+            // This function takes a node (source or target), and the coordinates of the other node
+            function getRectIntersection(node, targetX, targetY) {
+                const nodeX = node.x;
+                const nodeY = node.y;
+                const nodeWidth = (node.type === "main" ? mainNodeWidth : otherNodeWidth);
+                const nodeHeight = (node.type === "main" ? mainNodeHeight : otherNodeHeight);
+
+                // Calculate vector from node center to target
+                const dx = targetX - nodeX;
+                const dy = targetY - nodeY;
+
+                // Handle zero division for vertical/horizontal lines
+                if (dx === 0 && dy === 0) {
+                    return { x: nodeX, y: nodeY }; // Same point, no intersection
+                }
+
+                // Calculate intersection points with the rectangle's bounding box
+                const halfWidth = nodeWidth / 2;
+                const halfHeight = nodeHeight / 2;
+
+                let intersectX, intersectY;
+
+                // Determine which edge the line intersects
+                // Check if the line is more horizontal or more vertical
+                if (Math.abs(dx * halfHeight) > Math.abs(dy * halfWidth)) {
+                    // Intersects vertical sides (left or right)
+                    intersectX = dx > 0 ? halfWidth : -halfWidth;
+                    intersectY = dy * (intersectX / dx);
+                } else {
+                    // Intersects horizontal sides (top or bottom)
+                    intersectY = dy > 0 ? halfHeight : -halfHeight;
+                    intersectX = dx * (intersectY / dy);
+                }
+
+                // Add back the node's center coordinates
+                return { x: nodeX + intersectX, y: nodeY + intersectY };
+            }
+
+            // Create force simulation
+            const simulation = d3.forceSimulation(nodes)
+                .force("link", d3.forceLink(links).id(d => d.id).distance(300))
+                .force("charge", d3.forceManyBody().strength(-800))
+                .force("center", d3.forceCenter(width / 2, height / 2)) /* Center based on new width/height */
+                // Adjust collision radius for new box sizes
+                .force("collision", d3.forceCollide().radius(d => d.type === "main" ? mainNodeWidth / 2 + 10 : otherNodeWidth / 2 + 10));
+
+            // Create links
+            const link = svg.append("g")
+                .selectAll("line")
+                .data(links)
+                .join("line")
+                .attr("class", "link")
+                .attr("stroke", d => {
+                    if (d.type === "tribute") return linkColors.tribute; // Red for tribute
+                    if (d.status === "proposed") return linkColors.proposed; // Lighter orange for proposed (including proposed trade)
+                    if (d.type === "trade") return linkColors.trade; // Accent orange for agreed trade
+                    return linkColors.agreed; // Cyan for other agreed relations (pact, diplomatic)
+                });
+
+            // Create nodes
+            const node = svg.append("g")
+                .selectAll("g")
+                .data(nodes)
+                .join("g")
+                .attr("class", "node")
+                .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended));
+
+            // Append rectangles instead of circles
+            node.append("rect")
+                .attr("width", d => d.type === "main" ? mainNodeWidth : otherNodeWidth)
+                .attr("height", d => d.type === "main" ? mainNodeHeight : otherNodeHeight)
+                .attr("x", d => -(d.type === "main" ? mainNodeWidth : otherNodeWidth) / 2) // Center X
+                .attr("y", d => -(d.type === "main" ? mainNodeHeight : otherNodeHeight) / 2) // Center Y
+                .attr("rx", 8) /* Rounded corners */
+                .attr("ry", 8) /* Rounded corners */
+                .attr("fill", "none") /* No fill color */
+                .attr("stroke", d => nodeColors[d.type]); /* Use nodeColors for stroke */
+
+            node.append("text")
+                .text(d => d.id)
+                .attr("font-size", d => d.type === "main" ? "14px" : "10px"); /* Font size set in JS, overriding CSS for main node */
+
+            // Track pinned tooltips
+            let pinnedTooltips = new Set();
+            
+            // Function to create tooltip content
+            function createTooltipContent(d) {
+                const connectedLinks = links.filter(l => l.source.id === d.id || l.target.id === d.id);
+                let tooltipText = `<strong>${d.id}</strong><br/>`;
+                
+                if (d.id === "New Carolus") {
+                    tooltipText += `Relations: ${connectedLinks.length}<br/>`;
+                    tooltipText += `Agreed: ${connectedLinks.filter(l => l.status === "agreed").length}<br/>`;
+                    tooltipText += `Proposed: ${connectedLinks.filter(l => l.status === "proposed").length}`;
+                } else {
+                    const relation = connectedLinks.find(l => l.source.id === d.id || l.target.id === d.id); // Find *any* relation
+                    if (relation) {
+                        tooltipText += `Status: ${relation.status}<br/>`;
+                        tooltipText += `Type: ${relation.type}<br/>`;
+                        tooltipText += relation.description;
+                    }
+                }
+                return tooltipText;
+            }
+            
+            // Function to show tooltip
+            function showTooltip(event, d, isPinned = false) {
+                const tooltipId = `tooltip-${d.id.replace(/\s/g, '-')}`;
+                
+                // Remove existing tooltip for this node if it exists
+                d3.select(`#${tooltipId}`).remove();
+                
+                const tooltipDiv = d3.select("body")
+                    .append("div")
+                    .attr("id", tooltipId)
+                    .attr("class", "tooltip")
+                    .style("opacity", 0)
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 10) + "px")
+                    .style("pointer-events", isPinned ? "auto" : "none") // Allow interaction if pinned
+                    .html(createTooltipContent(d))
+                    .transition()
+                    .duration(200)
+                    .style("opacity", 1);
+                
+                if (isPinned) {
+                    pinnedTooltips.add(tooltipId);
+                    
+                    // Add close instruction for pinned tooltips
+                    tooltipDiv.append("div")
+                        .style("margin-top", "8px")
+                        .style("font-size", "11px")
+                        .style("color", "#888")
+                        .text("Right-click to close");
+                }
+            }
+            
+            // Tooltip interactions
+            node.on("mouseover", function(event, d) {
+                const tooltipId = `tooltip-${d.id.replace(/\s/g, '-')}`;
+                // Only show hover tooltip if not already pinned
+                if (!pinnedTooltips.has(tooltipId)) {
+                    showTooltip(event, d, false);
+                }
+            })
+            .on("mouseout", function(event, d) {
+                const tooltipId = `tooltip-${d.id.replace(/\s/g, '-')}`;
+                // Only hide if not pinned
+                if (!pinnedTooltips.has(tooltipId)) {
+                    d3.select(`#${tooltipId}`).remove();
+                }
+            })
+            .on("click", function(event, d) {
+                event.preventDefault(); // Prevent any default click behavior
+                showTooltip(event, d, true);
+            })
+            .on("contextmenu", function(event, d) {
+                event.preventDefault(); // Prevent default context menu
+                const tooltipId = `tooltip-${d.id.replace(/\s/g, '-')}`;
+                
+                // Remove pinned tooltip
+                d3.select(`#${tooltipId}`).remove();
+                pinnedTooltips.delete(tooltipId);
+            });
+
+            // Update positions on simulation tick
+            simulation.on("tick", () => {
+                link
+                    .attr("x1", d => getRectIntersection(d.source, d.target.x, d.target.y).x)
+                    .attr("y1", d => getRectIntersection(d.source, d.target.x, d.target.y).y)
+                    .attr("x2", d => getRectIntersection(d.target, d.source.x, d.source.y).x)
+                    .attr("y2", d => getRectIntersection(d.target, d.source.x, d.source.y).y);
+
+                // Update node positions for the group (rect and text)
+                node
+                    .attr("transform", d => `translate(${d.x},${d.y})`);
+            });
+
+            // Drag functions
+            function dragstarted(event, d) {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+            }
+
+            function dragged(event, d) {
+                d.fx = event.x;
+                d.fy = event.y;
+            }
+
+            function dragended(event, d) {
+                if (!event.active) simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+            }
+        }); // End DOMContentLoaded
+    </script>
+</body>
+</html>
