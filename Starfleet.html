@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Carolus Starfleet Registry</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #0a0a0a;
+            color: #00ff00;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .header {
+            text-align: center;
+            border: 2px solid #00ff00;
+            padding: 20px;
+            margin-bottom: 30px;
+            background-color: #001100;
+        }
+        
+        .header h1 {
+            color: #00ffff;
+            font-size: 2.5em;
+            margin: 0;
+            text-shadow: 0 0 10px #00ffff;
+        }
+        
+        .header h2 {
+            color: #ffff00;
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+        
+        .classification {
+            color: #ff6600;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        
+        .ship-class {
+            border: 1px solid #00ff00;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #001a00;
+        }
+        
+        .ship-class h3 {
+            color: #00ffff;
+            margin-top: 0;
+            font-size: 1.4em;
+            text-decoration: underline;
+        }
+        
+        .class-designation {
+            color: #ffff00;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .active-ships {
+            color: #00ff00;
+            margin-bottom: 15px;
+        }
+        
+        .active-ships h4 {
+            color: #ff9900;
+            margin: 5px 0;
+        }
+        
+        .future-designations {
+            color: #888888;
+            border-top: 1px dashed #333333;
+            padding-top: 10px;
+        }
+        
+        .future-designations h4 {
+            color: #666666;
+            margin: 5px 0;
+        }
+        
+        .ship-list {
+            margin-left: 20px;
+        }
+        
+        .ship-name {
+            color: #00cccc;
+            margin: 2px 0;
+        }
+        
+        .ncs-prefix {
+            color: #ffff00;
+            font-weight: bold;
+        }
+        
+        .fleet-summary {
+            border: 2px solid #ffff00;
+            padding: 15px;
+            margin: 30px 0;
+            background-color: #1a1a00;
+        }
+        
+        .fleet-summary h3 {
+            color: #ffff00;
+            margin-top: 0;
+        }
+        
+        .summary-item {
+            color: #00ff00;
+            margin: 5px 0;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666666;
+            font-size: 0.9em;
+        }
+        
+        .status-active {
+            color: #00ff00;
+            font-weight: bold;
+        }
+        
+        .status-planned {
+            color: #888888;
+            font-style: italic;
+        }
+        
+        .ship-graphic {
+            text-align: center;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: rgba(0, 50, 100, 0.1);
+            border: 1px solid #004488;
+            border-radius: 5px;
+        }
+        
+        .ship-svg {
+            filter: drop-shadow(0 0 5px #00aaff);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>NEW CAROLUS STARFLEET</h1>
+        <h2>Official Fleet Registry & Designation Database</h2>
+        <div class="classification">RESTRICTED - FLEET COMMAND ONLY</div>
+    </div>
+
+    <div class="fleet-summary">
+        <h3>CURRENT FLEET COMPOSITION</h3>
+        <div class="summary-item">Modified Transports (MT): 5 vessels - Helot Class</div>
+        <div class="summary-item">Destroyers (DD): 1 vessel - Sentry Class</div>
+        <div class="summary-item">Battlecruisers (BC): 0 vessels - Enforcer Class (Planned)</div>
+        <div class="summary-item">Battleships (BB): 0 vessels - (Future Development)</div>
+        <div class="summary-item">Defense Stations (NCDS): 0 stations - Bastion Class (Planned)</div>
+    </div>
+
+    <div class="ship-class">
+        <h3>MODIFIED TRANSPORT CLASS</h3>
+        <div class="class-designation">Designation: MT | Class: Helot | Total Vessels: 5</div>
+        
+        <div class="ship-graphic">
+            <svg class="ship-svg" width="80" height="80" viewBox="0 0 80 80">
+                <!-- Modified Transport - Blue variant based on actual design -->
+                <defs>
+                    <linearGradient id="blueGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#6699cc;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#334466;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <!-- Main central body -->
+                <rect x="30" y="25" width="20" height="30" fill="url(#blueGrad1)" stroke="#0088ff" stroke-width="2"/>
+                <!-- Side extensions with curves -->
+                <path d="M 20 35 L 30 30 L 30 50 L 20 45 Z" fill="url(#blueGrad1)" stroke="#0088ff" stroke-width="2"/>
+                <path d="M 60 35 L 50 30 L 50 50 L 60 45 Z" fill="url(#blueGrad1)" stroke="#0088ff" stroke-width="2"/>
+                <!-- Top and bottom connectors -->
+                <rect x="35" y="20" width="10" height="10" fill="url(#blueGrad1)" stroke="#0088ff" stroke-width="2"/>
+                <rect x="35" y="50" width="10" height="10" fill="url(#blueGrad1)" stroke="#0088ff" stroke-width="2"/>
+                <!-- Power cores -->
+                <circle cx="25" cy="40" r="3" fill="#00ffff"/>
+                <circle cx="55" cy="40" r="3" fill="#00ffff"/>
+                <circle cx="40" cy="40" r="4" fill="#00ffff"/>
+            </svg>
+        </div>
+        
+        <div class="active-ships">
+            <h4>ACTIVE VESSELS:</h4>
+            <div class="ship-list">
+                <div class="ship-name"><span class="ncs-prefix">NCS</span> Helot</div>
+                <div class="ship-name"><span class="ncs-prefix">NCS</span> Drudge</div>
+                <div class="ship-name"><span class="ncs-prefix">NCS</span> Toiler</div>
+                <div class="ship-name"><span class="ncs-prefix">NCS</span> Thrall</div>
+                <div class="ship-name"><span class="ncs-prefix">NCS</span> Labourer</div>
+            </div>
+        </div>
+        
+        <div class="future-designations">
+            <h4>FUTURE DESIGNATIONS:</h4>
+            <div class="ship-list">
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Vassal</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Serf</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Bondsman</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Servant</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Slave</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Indentured</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Dreg</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Peon</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Grunt</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ship-class">
+        <h3>DESTROYER CLASS</h3>
+        <div class="class-designation">Designation: DD | Class: Sentry | Total Vessels: 1</div>
+        
+        <div class="ship-graphic">
+            <svg class="ship-svg" width="80" height="100" viewBox="0 0 80 100">
+                <!-- Destroyer - Blue variant based on actual design -->
+                <defs>
+                    <linearGradient id="blueGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#6699cc;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#334466;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <!-- Central spine -->
+                <rect x="35" y="10" width="10" height="80" fill="url(#blueGrad2)" stroke="#0088ff" stroke-width="2"/>
+                <!-- Upper section -->
+                <rect x="25" y="15" width="30" height="20" fill="url(#blueGrad2)" stroke="#0088ff" stroke-width="2"/>
+                <!-- Middle cross section -->
+                <rect x="15" y="40" width="50" height="15" fill="url(#blueGrad2)" stroke="#0088ff" stroke-width="2"/>
+                <!-- Lower section -->
+                <rect x="25" y="65" width="30" height="20" fill="url(#blueGrad2)" stroke="#0088ff" stroke-width="2"/>
+                <!-- Side extensions -->
+                <rect x="10" y="45" width="10" height="8" fill="url(#blueGrad2)" stroke="#0088ff" stroke-width="2"/>
+                <rect x="60" y="45" width="10" height="8" fill="url(#blueGrad2)" stroke="#0088ff" stroke-width="2"/>
+                <!-- Power cores -->
+                <circle cx="20" cy="48" r="2" fill="#00ffff"/>
+                <circle cx="60" cy="48" r="2" fill="#00ffff"/>
+                <circle cx="40" cy="48" r="4" fill="#00ffff"/>
+            </svg>
+        </div>
+        
+        <div class="active-ships">
+            <h4>ACTIVE VESSELS:</h4>
+            <div class="ship-list">
+                <div class="ship-name"><span class="ncs-prefix">NCS</span> Sentry</div>
+            </div>
+        </div>
+        
+        <div class="future-designations">
+            <h4>FUTURE DESIGNATIONS:</h4>
+            <div class="ship-list">
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Watchman</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Vigil</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Vigilant</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Guard</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Lookout</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Sentinel</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Watcher</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ship-class">
+        <h3>BATTLECRUISER CLASS</h3>
+        <div class="class-designation">Designation: BC | Class: Enforcer | Total Vessels: 0 (Planned)</div>
+        
+        <div class="ship-graphic">
+            <svg class="ship-svg" width="80" height="120" viewBox="0 0 80 120">
+                <!-- Battlecruiser - Blue variant based on actual design -->
+                <defs>
+                    <linearGradient id="blueGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#6699cc;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#334466;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <!-- Main hull - elongated -->
+                <rect x="25" y="20" width="30" height="80" fill="url(#blueGrad3)" stroke="#0088ff" stroke-width="2"/>
+                <!-- Upper weapon section -->
+                <rect x="20" y="15" width="40" height="15" fill="url(#blueGrad3)" stroke="#0088ff" stroke-width="2"/>
+                <!-- Side weapon pods -->
+                <rect x="10" y="35" width="15" height="12" fill="url(#blueGrad3)" stroke="#0088ff" stroke-width="2"/>
+                <rect x="55" y="35" width="15" height="12" fill="url(#blueGrad3)" stroke="#0088ff" stroke-width="2"/>
+                <rect x="10" y="75" width="15" height="12" fill="url(#blueGrad3)" stroke="#0088ff" stroke-width="2"/>
+                <rect x="55" y="75" width="15" height="12" fill="url(#blueGrad3)" stroke="#0088ff" stroke-width="2"/>
+                <!-- Lower engine section -->
+                <rect x="20" y="85" width="40" height="20" fill="url(#blueGrad3)" stroke="#0088ff" stroke-width="2"/>
+                <!-- Power cores arranged vertically -->
+                <circle cx="30" cy="30" r="2" fill="#00ffff"/>
+                <circle cx="50" cy="30" r="2" fill="#00ffff"/>
+                <circle cx="18" cy="41" r="2" fill="#00ffff"/>
+                <circle cx="62" cy="41" r="2" fill="#00ffff"/>
+                <circle cx="18" cy="81" r="2" fill="#00ffff"/>
+                <circle cx="62" cy="81" r="2" fill="#00ffff"/>
+                <circle cx="40" cy="60" r="5" fill="#00ffff"/>
+            </svg>
+        </div>
+        
+        <div class="future-designations">
+            <h4>PLANNED DESIGNATIONS:</h4>
+            <div class="ship-list">
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Enforcer</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Taskmaster</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Oppressor</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Arbitrator</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Justicar</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Adjudicator</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Magistrate</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Overseer</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Suppressor</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Executor</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Inquisitor</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Retaliator</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Monitor</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCS</span> Director</div>
+            </div>
+    <div class="ship-class">
+        <h3>BATTLESHIP CLASS</h3>
+        <div class="class-designation">Designation: BB | Class: TBD | Total Vessels: 0 (Future Development)</div>
+        
+        <div class="ship-graphic">
+            <svg class="ship-svg" width="80" height="140" viewBox="0 0 80 140">
+                <!-- Battleship - Blue variant based on actual design -->
+                <defs>
+                    <linearGradient id="blueGrad4" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#6699cc;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#334466;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <!-- Main central spine -->
+                <rect x="30" y="15" width="20" height="110" fill="url(#blueGrad4)" stroke="#0088ff" stroke-width="2"/>
+                <!-- Upper weapon complex -->
+                <rect x="15" y="20" width="50" height="25" fill="url(#blueGrad4)" stroke="#0088ff" stroke-width="2"/>
+                <!-- Central weapon bay with opening -->
+                <rect x="20" y="50" width="40" height="40" fill="url(#blueGrad4)" stroke="#0088ff" stroke-width="2"/>
+                <rect x="35" y="60" width="10" height="20" fill="#001122" stroke="#0088ff" stroke-width="1"/>
+                <!-- Lower engine section -->
+                <rect x="15" y="95" width="50" height="25" fill="url(#blueGrad4)" stroke="#0088ff" stroke-width="2"/>
+                <!-- Side weapon pods -->
+                <rect x="5" y="35" width="12" height="15" fill="url(#blueGrad4)" stroke="#0088ff" stroke-width="2"/>
+                <rect x="63" y="35" width="12" height="15" fill="url(#blueGrad4)" stroke="#0088ff" stroke-width="2"/>
+                <rect x="5" y="90" width="12" height="15" fill="url(#blueGrad4)" stroke="#0088ff" stroke-width="2"/>
+                <rect x="63" y="90" width="12" height="15" fill="url(#blueGrad4)" stroke="#0088ff" stroke-width="2"/>
+                <!-- Multiple power cores -->
+                <circle cx="11" cy="42" r="2" fill="#00ffff"/>
+                <circle cx="69" cy="42" r="2" fill="#00ffff"/>
+                <circle cx="25" cy="65" r="2" fill="#00ffff"/>
+                <circle cx="55" cy="65" r="2" fill="#00ffff"/>
+                <circle cx="25" cy="75" r="2" fill="#00ffff"/>
+                <circle cx="55" cy="75" r="2" fill="#00ffff"/>
+                <circle cx="11" cy="97" r="2" fill="#00ffff"/>
+                <circle cx="69" cy="97" r="2" fill="#00ffff"/>
+                <circle cx="40" cy="100" r="4" fill="#00ffff"/>
+            </svg>
+        </div>
+        
+        <div class="future-designations">
+            <h4>FUTURE DEVELOPMENT:</h4>
+            <div class="ship-list">
+                <div class="ship-name status-planned">Class designation and ship names to be determined</div>
+            </div>
+        </div>
+    </div>
+        <div class="class-designation">Designation: NCDS | Class: Bastion | Total Stations: 0 (Planned)</div>
+        
+        <div class="future-designations">
+            <h4>PLANNED DESIGNATIONS:</h4>
+            <div class="ship-list">
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCDS</span> Bastion</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCDS</span> Fort</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCDS</span> Fortress</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCDS</span> Citadel</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCDS</span> Bulwark</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCDS</span> Redoubt</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCDS</span> Palisade</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCDS</span> Rampart</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCDS</span> Keep</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCDS</span> Stronghold</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCDS</span> Barbican</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCDS</span> Stockade</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCDS</span> Parapet</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCDS</span> Battlement</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCDS</span> Garrison</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCDS</span> Wall</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCDS</span> Castra</div>
+                <div class="ship-name status-planned"><span class="ncs-prefix">NCDS</span> Aegis</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>NEW CAROLUS STARFLEET COMMAND | FLEET REGISTRY DATABASE</p>
+        <p>Last Updated: Stardate 2425.161 | Classification: RESTRICTED</p>
+    </div>
+</body>
+</html>
